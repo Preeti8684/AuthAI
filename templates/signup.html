@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="p-4 mb-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form id="signupForm" class="mt-8 space-y-6" method="POST" action="{{ url_for('signup') }}">
+                
+                <div class="rounded-md shadow-sm space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input id="name" name="name" type="text" required 
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                            placeholder="John Doe">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                        <input id="email" name="email" type="email" required 
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                            placeholder="example@email.com">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <div class="relative">
+                            <input id="password" name="password" type="password" required 
+                                class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                placeholder="••••••••">
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="pic_name" class="block text-sm font-medium text-gray-700">Picture Name</label>
+                        <input id="pic_name" name="pic_name" type="text" required 
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                            placeholder="profile_pic">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" id="submitButton"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        Create Account
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{{ url_for('login') }}" class="font-medium text-blue-600 hover:text-blue-500">
+                        Sign in
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const picName = document.getElementById('pic_name').value.trim();
+            
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (!name) {
+                errorMessage = 'Please enter your full name.';
+                isValid = false;
+            } else if (!email) {
+                errorMessage = 'Please enter your email address.';
+                isValid = false;
+            } else if (!email.includes('@') || !email.includes('.')) {
+                errorMessage = 'Please enter a valid email address.';
+                isValid = false;
+            } else if (!password) {
+                errorMessage = 'Please enter a password.';
+                isValid = false;
+            } else if (password.length < 6) {
+                errorMessage = 'Password must be at least 6 characters long.';
+                isValid = false;
+            } else if (!picName) {
+                errorMessage = 'Please enter a name for your profile picture.';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'p-4 mb-4 rounded-lg bg-red-100 text-red-700';
+                errorDiv.textContent = errorMessage;
+                
+                // Remove any existing error messages
+                const existingError = document.querySelector('.bg-red-100');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                // Insert error message at the top of the form
+                const form = document.getElementById('signupForm');
+                form.insertBefore(errorDiv, form.firstChild);
+            }
+        });
+
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.querySelector('i').classList.toggle('fa-eye');
+            togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+</html>

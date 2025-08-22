@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invalid Permission Link - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+        <div class="mb-6">
+            <div class="mx-auto w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg class="h-12 w-12 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mt-6">Invalid Permission Link</h1>
+            <p class="text-gray-600 mt-2">The permission link you clicked is invalid or expired.</p>
+        </div>
+
+        <div class="bg-yellow-50 p-4 rounded-lg mb-6">
+            <p class="text-sm text-yellow-700">
+                {{ error }}
+            </p>
+            <p class="text-sm text-yellow-700 mt-2">
+                For security reasons, permission links expire after 30 minutes. If your link has expired, please go through the face recognition process again.
+            </p>
+        </div>
+
+        <div class="mt-6">
+            <a href="/face_recognize_with_permission" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                Try Again
+            </a>
+            <a href="/" class="ml-3 px-6 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">
+                Go to Homepage
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

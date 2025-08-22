@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Scan - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Face Scan</h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Please position your face in the camera frame
+                </p>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div id="errorMessage" class="hidden p-4 mb-4 rounded-lg bg-red-100 text-red-700"></div>
+            <div id="successMessage" class="hidden p-4 mb-4 rounded-lg bg-green-100 text-green-700"></div>
+
+            <!-- Camera Feed -->
+            <div class="relative">
+                <video id="video" class="w-full rounded-lg shadow-md" autoplay playsinline></video>
+                <canvas id="canvas" class="hidden"></canvas>
+                <div id="overlay" class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-96 h-96 border-2 border-blue-500 rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Face Name Input -->
+            <div class="mt-4">
+                <label for="picName" class="block text-sm font-medium text-gray-700">Name for this face:</label>
+                <input type="text" id="picName" name="picName" value="{{ current_user.get('username', '') }}" 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <p class="mt-1 text-xs text-gray-500">This name will be displayed in welcome messages</p>
+            </div>
+
+            <!-- Capture Controls -->
+            <div class="flex justify-center space-x-4">
+                <button id="captureBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-camera mr-2"></i>Capture
+                </button>
+                <button id="retakeBtn" class="hidden px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    <i class="fas fa-redo mr-2"></i>Retake
+                </button>
+                <button id="submitBtn" class="hidden px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <i class="fas fa-check mr-2"></i>Submit
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="bg-white p-5 rounded-lg flex items-center">
+                    <i class="fas fa-spinner fa-spin text-blue-600 text-2xl mr-3"></i>
+                    <span>Processing...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        let stream = null;
+
+        // Start camera
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    } 
+                });
+                video.srcObject = stream;
+                captureBtn.disabled = false;
+            } catch (err) {
+                showError('Unable to access camera: ' + err.message);
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            successMessage.classList.add('hidden');
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+        }
+
+        // Capture photo
+        captureBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            // Show preview and controls
+            video.classList.add('hidden');
+            canvas.classList.remove('hidden');
+            captureBtn.classList.add('hidden');
+            retakeBtn.classList.remove('hidden');
+            submitBtn.classList.remove('hidden');
+        });
+
+        // Retake photo
+        retakeBtn.addEventListener('click', () => {
+            canvas.classList.add('hidden');
+            video.classList.remove('hidden');
+            captureBtn.classList.remove('hidden');
+            retakeBtn.classList.add('hidden');
+            submitBtn.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+        });
+
+        // Submit photo
+        submitBtn.addEventListener('click', async () => {
+            try {
+                loadingSpinner.classList.remove('hidden');
+                
+                // Convert canvas to blob
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+                const formData = new FormData();
+                formData.append('image', blob, 'face.jpg');
+                formData.append('csrf_token', '{{ csrf_token() }}');
+                
+                // Get pic_name from input field instead of using prompt
+                const picName = document.getElementById('picName').value.trim();
+                if (picName) {
+                    formData.append('pic_name', picName);
+                }
+
+                // Submit to server
+                const response = await fetch('{{ url_for("face_scan") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    let successMsg = data.message || 'Face scan successful!';
+                    if (picName) {
+                        successMsg = `${picName} registered successfully! ${successMsg}`;
+                    }
+                    showSuccess(successMsg);
+                    // Redirect after success
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    if (data.duplicate) {
+                        // Create a more detailed error message for duplicate faces
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'p-4 mb-4 rounded-lg bg-red-100 text-red-700';
+                        errorDiv.innerHTML = `
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-red-800">Face Already Registered</h3>
+                                    <div class="mt-2 text-sm text-red-700">
+                                        <p>${data.message}</p>
+                                    </div>
+                                    <div class="mt-4">
+                                        <button type="button" class="text-sm font-medium text-red-800 hover:text-red-900" onclick="retakeBtn.click()">
+                                            Try Again with Different Face <i class="fas fa-arrow-right ml-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Remove any existing error messages
+                        const existingError = document.querySelector('.bg-red-100');
+                        if (existingError) {
+                            existingError.remove();
+                        }
+                        
+                        // Insert error message at the top of the container
+                        const container = document.querySelector('.space-y-8');
+                        container.insertBefore(errorDiv, container.firstChild);
+                        
+                        // Handle duplicate face case
+                        retakeBtn.click();
+                    } else {
+                        showError(data.message || 'Failed to process face scan');
+                    }
+                }
+            } catch (err) {
+                showError('Error submitting photo: ' + err.message);
+            } finally {
+                loadingSpinner.classList.add('hidden');
+            }
+        });
+
+        // Start camera when page loads
+        startCamera();
+
+        // Cleanup when page unloads
+        window.addEventListener('unload', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>
+

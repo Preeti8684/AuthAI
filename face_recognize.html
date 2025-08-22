@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        video {
+            transform: scaleX(-1); /* Mirror the video */
+        }
+        canvas {
+            display: none;
+        }
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .capture-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 3px dashed #ffffff;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 10;
+        }
+        /* Success/Error animations */
+        .success-feedback {
+            animation: success-pulse 1s ease-in-out;
+        }
+        .error-feedback {
+            animation: error-shake 0.5s ease-in-out;
+        }
+        @keyframes success-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        @keyframes error-shake {
+            0%, 100% { transform: translate(-50%, -50%); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-55%, -50%); }
+            20%, 40%, 60%, 80% { transform: translate(-45%, -50%); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold">AuthAI</div>
+            <div>
+                <a href="/" class="px-3 py-2 rounded hover:bg-blue-700">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 flex-grow flex flex-col">
+        <h1 class="text-2xl font-bold text-center mb-6">Face Recognition</h1>
+        
+        <!-- Error/Success Messages -->
+        <div id="errorMessage" class="hidden mb-4 p-4 rounded-lg bg-red-100 text-red-700"></div>
+        <div id="successMessage" class="hidden mb-4 p-4 rounded-lg bg-green-100 text-green-700"></div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6 max-w-xl mx-auto w-full">
+            <div class="mb-4 text-gray-700">
+                <p>Please position your face inside the circle and click the Verify button.</p>
+            </div>
+            
+            <div class="camera-container mb-4">
+                <video id="video" width="480" height="360" autoplay></video>
+                <div class="capture-circle" id="captureCircle"></div>
+                <canvas id="canvas" width="480" height="360"></canvas>
+            </div>
+            
+            <div class="flex justify-center">
+                <button id="captureBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Verify Face
+                </button>
+            </div>
+        </div>
+        
+        <div class="text-center text-gray-600 text-sm mt-auto">
+            <p>Your face will be securely processed for verification.</p>
+        </div>
+    </div>
+    
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const captureCircle = document.getElementById('captureCircle');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const ctx = canvas.getContext('2d');
+        
+        // Start camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 480, height: 360 } 
+                });
+                video.srcObject = stream;
+                
+                // Enable capture button after camera starts
+                video.onloadedmetadata = () => {
+                    captureBtn.disabled = false;
+                };
+            } catch (err) {
+                showError('Unable to access camera: ' + err.message);
+                console.error('Error accessing camera:', err);
+            }
+        }
+        
+        // Clear messages
+        function clearMessages() {
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            captureCircle.classList.add('error-feedback');
+            
+            setTimeout(() => {
+                captureCircle.classList.remove('error-feedback');
+            }, 500);
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.remove('hidden');
+            captureCircle.classList.add('success-feedback');
+            
+            setTimeout(() => {
+                captureCircle.classList.remove('success-feedback');
+            }, 1000);
+        }
+        
+        // Capture and verify face
+        async function captureFace() {
+            clearMessages();
+            captureBtn.disabled = true;
+            
+            try {
+                // Draw the current video frame to the canvas
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Convert the frame to a blob
+                canvas.toBlob(async (blob) => {
+                    // Create form data with the image
+                    const formData = new FormData();
+                    formData.append('image', blob, 'face.jpg');
+                    
+                    try {
+                        // Send the image to the server for verification
+                        const response = await fetch('/face_recognize', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Success case
+                            showSuccess(`Welcome back, ${data.name}! Face verification successful.`);
+                            
+                            // Show message about sending permission email
+                            setTimeout(() => {
+                                showSuccess(`Email verification is being sent to your registered email. Please check your inbox and click "Yes" to complete the process.`);
+                            }, 3000);
+                            
+                            // Redirect to dashboard after a delay
+                            setTimeout(() => {
+                                window.location.href = '/dashboard';
+                            }, 8000);
+                        } else {
+                            showError(data.message || 'Face verification failed');
+                            captureBtn.disabled = false;
+                        }
+                    } catch (error) {
+                        console.error('Error during face verification:', error);
+                        showError('Error during face verification. Please try again.');
+                        captureBtn.disabled = false;
+                    }
+                }, 'image/jpeg');
+            } catch (error) {
+                console.error('Error capturing face:', error);
+                showError('Error capturing face. Please try again.');
+                captureBtn.disabled = false;
+            }
+        }
+        
+        // Event listeners
+        captureBtn.addEventListener('click', captureFace);
+        
+        // Start everything when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            captureBtn.disabled = true;
+            startCamera();
+        });
+        
+        // Cleanup when leaving the page
+        window.addEventListener('beforeunload', () => {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Granted - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+        <div class="mb-6">
+            <div class="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="h-12 w-12 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mt-6">Permission Granted!</h1>
+            <p class="text-gray-600 mt-2">You have successfully granted permission to use face recognition features.</p>
+        </div>
+
+        <!-- Success notification -->
+        <div class="bg-green-50 p-4 rounded-lg mb-6 border-l-4 border-green-500">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700 font-medium">
+                        <strong>Yes! You can now use the application!</strong>
+                    </p>
+                    <p class="text-sm text-green-600 mt-1">
+                        Your face recognition authentication is now fully enabled.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-gray-600 mb-6">
+            You can now use face recognition for secure access to your account. Your facial data is encrypted and stored securely.
+        </p>
+
+        <div class="mt-6">
+            <a href="/dashboard" class="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+                Go to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Floating success notification -->
+    <div class="fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md" id="notification">
+        <div class="flex">
+            <div class="py-1">
+                <svg class="h-6 w-6 text-green-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div>
+                <p class="font-bold">Permission granted successfully!</p>
+                <p class="text-sm">You can now use all features of the application.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide notification after 5 seconds
+        setTimeout(function() {
+            document.getElementById('notification').style.display = 'none';
+        }, 5000);
+    </script>
+</body>
+</html> 

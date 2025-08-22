@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Settings</h2>
+                <a href="/dashboard" class="text-indigo-600 hover:text-indigo-800">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Change Password Section -->
+            <div class="mb-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
+                <form id="passwordForm" class="space-y-4">
+                    <div>
+                        <label for="currentPassword" class="block text-sm font-medium text-gray-700">Current Password</label>
+                        <input type="password" 
+                               id="currentPassword" 
+                               name="current_password"
+                               required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password</label>
+                        <input type="password" 
+                               id="newPassword" 
+                               name="new_password"
+                               required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                        <input type="password" 
+                               id="confirmPassword" 
+                               required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                        Change Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Delete Account Section -->
+            <div class="border-t pt-8">
+                <h3 class="text-lg font-medium text-red-600 mb-4">Delete Account</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    Once you delete your account, there is no going back. Please be certain.
+                </p>
+                <form id="deleteForm" class="space-y-4">
+                    <div>
+                        <label for="deletePassword" class="block text-sm font-medium text-gray-700">Enter your password to confirm</label>
+                        <input type="password" 
+                               id="deletePassword" 
+                               name="password"
+                               required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        Delete Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="status" class="hidden mt-4 p-4 rounded-md"></div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6 mt-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Permissions</h2>
+            <p class="text-gray-600 mb-4">Manage your permission settings for access to camera and facial recognition features.</p>
+            
+            <div class="mb-4">
+                <span class="text-sm font-medium text-gray-700">Current Status:</span>
+                <span id="permissionStatus" class="ml-2 px-2 py-1 text-xs font-semibold rounded-full">
+                    Checking...
+                </span>
+            </div>
+            
+            <button id="resetPermissionsBtn" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+                Reset Permission Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const passwordForm = document.getElementById('passwordForm');
+        const deleteForm = document.getElementById('deleteForm');
+        const status = document.getElementById('status');
+
+        // Change password
+        passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showStatus('New passwords do not match', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('/change_password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(new FormData(passwordForm))
+                });
+
+                const data = await response.json();
+                showStatus(data.message, data.success);
+                
+                if (data.success) {
+                    passwordForm.reset();
+                }
+            } catch (error) {
+                showStatus('Error changing password', false);
+            }
+        });
+
+        // Delete account
+        deleteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/delete_account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(new FormData(deleteForm))
+                });
+
+                const data = await response.json();
+                showStatus(data.message, data.success);
+                
+                if (data.success) {
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                }
+            } catch (error) {
+                showStatus('Error deleting account', false);
+            }
+        });
+
+        // Reset permissions
+        document.getElementById('resetPermissionsBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset your permission settings? You will need to grant permission again.')) {
+                fetch('/reset_permissions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({reset: true})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showStatus(data.message, data.success);
+                    if (data.success) {
+                        setTimeout(() => window.location.href = '/permission', 1500);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showStatus('An error occurred while resetting permissions.', false);
+                });
+            }
+        });
+
+        // Check permission status
+        fetch('/check_permission_status')
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById('permissionStatus');
+                if (data.granted) {
+                    statusElement.className = 'ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800';
+                    statusElement.textContent = 'Access Granted';
+                } else {
+                    statusElement.className = 'ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800';
+                    statusElement.textContent = 'Access Denied';
+                }
+                
+                // Show if the choice is remembered
+                if (data.remembered) {
+                    statusElement.textContent += ' (Remembered)';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('permissionStatus').textContent = 'Unknown';
+            });
+
+        // Helper function to show status messages
+        function showStatus(message, isSuccess) {
+            status.textContent = message;
+            status.className = `mt-4 p-4 rounded-md ${isSuccess ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            status.classList.remove('hidden');
+            setTimeout(() => {
+                status.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

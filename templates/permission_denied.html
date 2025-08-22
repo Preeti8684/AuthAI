@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Denied - AuthAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+        <div class="mb-6">
+            <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="h-10 w-10 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mt-4">Access Denied</h1>
+            <p class="text-gray-600 mt-2">You have chosen not to grant permission.</p>
+        </div>
+
+        <div class="bg-red-50 p-4 rounded-lg mb-6">
+            <p class="text-sm text-red-700">
+                Without the required permissions, you won't be able to use the facial recognition features of the AuthAI system.
+            </p>
+        </div>
+
+        <div class="mt-6">
+            <a href="/permission" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                Try Again
+            </a>
+            <a href="/" class="ml-3 px-6 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">
+                Go to Homepage
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

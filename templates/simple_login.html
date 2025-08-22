@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Login</h1>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST" action="/simple_login">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="kpreeti09050@gmail.com" required>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" value="test123" required>
+        
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html> 
