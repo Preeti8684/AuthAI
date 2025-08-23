@@ -3,7 +3,7 @@ flask-wtf==1.0.0
 pymongo==4.1.1
 bcrypt==3.2.0
 opencv-python==4.5.3.56
-numpy==1.21.2
+numpy>=1.25
 pyotp==2.6.0
 flask-limiter==2.4.5
 Werkzeug==2.0.1
