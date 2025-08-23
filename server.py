@@ -70,25 +70,26 @@ limiter = Limiter(
 
 # Fixed rate limiter configuration
 
-# MongoDB connection
+# MongoDB connection (Render/Atlas friendly)
 try:
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-    # Drop existing database if it exists with wrong case
-    try:
-        client.drop_database("authai")
-        client.drop_database("authAI")
-    except:
-        pass
-        
-    # Create fresh database with correct case
-    db = client.AuthAI
+    mongo_uri = os.environ.get("MONGODB_URI")
+    if mongo_uri:
+        client = pymongo.MongoClient(mongo_uri)
+        db = client.get_default_database() or client["AuthAI"]
+    else:
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        db = client.AuthAI
+
     users = db.users
     activities = db.activities
-    
-    # Create indexes for better performance
-    users.create_index("email", unique=True)
-    activities.create_index([("user_email", 1), ("timestamp", -1)])
-    
+
+    # Create indexes for better performance (safe on Atlas/local)
+    try:
+        users.create_index("email", unique=True)
+        activities.create_index([("user_email", 1), ("timestamp", -1)])
+    except Exception as e:
+        logger.warning(f"Index creation warning: {e}")
+
     logger.info("Successfully connected to MongoDB")
 except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {e}")
