@@ -124,10 +124,10 @@ celerybeat.pid
 .venv
 env/
 venv/
-venv_new/
 ENV/
 env.bak/
 venv.bak/
+venv_new/
 
 # Spyder project settings
 .spyderproject
@@ -161,25 +161,26 @@ cython_debug/
 #  *.iml
 #  *.ipr
 #  *.iws
-.idea/
 
-# VS Code
-.vscode/
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Face data and saved faces
-face_data/
-saved_faces/
-
-# Flask session files
-flask_session/
+# Node.js (remove these if not needed)
+node_modules/
+package.json
+package-lock.json
 
 # MongoDB data
 Data/
+face_data/
+saved_faces/
+flask_session/
+
+# Face recognition data
+*.p
+face_encodings.p
+
+# Backup files
+*.bak
+*.backup
+*.old
 
 # OS generated files
 .DS_Store
@@ -190,10 +191,9 @@ Data/
 ehthumbs.db
 Thumbs.db
 
-# Temporary files
-*.tmp
-*.temp
-*.bak
+# IDE files
+.vscode/
+.idea/
 *.swp
 *.swo
 *~

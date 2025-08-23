@@ -71,6 +71,16 @@ def extract_face(image, align_faces=False, enhance_contrast=False, normalize_lig
         if image is None:
             logger.error("Input image is None")
             return None
+        
+        # If image is a string (file path), read the image
+        if isinstance(image, str):
+            if not os.path.exists(image):
+                logger.error(f"Image file not found: {image}")
+                return None
+            image = cv2.imread(image)
+            if image is None:
+                logger.error(f"Failed to read image from path: {image}")
+                return None
             
         # Preprocess image
         gray = preprocess_image(image, normalize_lighting, enhance_contrast)
@@ -170,10 +180,8 @@ def is_face_duplicate(image):
                         best_match = user
                     
                     if similarity > threshold:
-                        user_info = user.get('username', 'Unknown')
-                        if user.get('email'):
-                            user_info = f"{user_info} ({user.get('email')})"
-                        return True, user_info
+                        # Return the user ID for duplicate detection
+                        return True, str(user.get('_id'))
                 except Exception as e:
                     logger.error(f"Error processing registered face: {str(e)}")
                     continue

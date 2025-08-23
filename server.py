@@ -384,6 +384,12 @@ def signup():
         return render_template("signup.html")
 
 @csrf.exempt
+@app.route("/face_login", methods=["GET"])
+def face_login_page():
+    """Serve the face login page."""
+    return render_template("face_login.html")
+
+@csrf.exempt
 @app.route("/login", methods=["GET", "POST"])
 @limiter.exempt  # Remove rate limiting from login to make testing easier
 def login():
@@ -396,15 +402,22 @@ def login():
         
         # Special case for test account
         if email == "kpreeti09050@gmail.com":
-            # Create a session directly
-            session.permanent = True
-            session["user_id"] = "67fe5abac0216a01406da0f9"  # Use the ID from logs
-            session["email"] = email
-            session["permission_granted"] = True
-            
-            logger.info(f"Test account login successful for {email}")
-            # Redirect directly to face recognition
-            return redirect(url_for("face_recognize"))
+            # Look up the actual user in database
+            user = users.find_one({"email": email})
+            if user:
+                session.permanent = True
+                session["user_id"] = str(user["_id"])
+                session["email"] = email
+                session["username"] = user.get("username", "User")
+                session["permission_granted"] = True
+                
+                logger.info(f"Test account login successful for {email}")
+                # Redirect directly to face recognition
+                return redirect(url_for("face_recognize"))
+            else:
+                logger.error(f"Test account {email} not found in database")
+                flash("Test account not found in database", "error")
+                return render_template("login.html")
         
         # Check if this is an AJAX request
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
@@ -794,22 +807,16 @@ def face_recognize():
             logger.error(f"Error finding user in POST: {str(e)}")
             return jsonify({"success": False, "message": "Error finding user"}), 500
             
-        # Check if this is a face_image POST
-        if 'face_image' in request.files:
-            file = request.files['face_image']
-            logger.info(f"Found face_image in request with filename: {file.filename}")
-        # Fall back to 'image' if face_image isn't there (for compatibility)
-        elif 'image' in request.files:
-            file = request.files['image']
-            logger.info(f"Found image in request with filename: {file.filename}")
-        else:
-            logger.error("No image file provided in request")
-            return jsonify({"success": False, "message": "No image file provided"}), 400
-            
         # Check if a pic_name was provided directly in the form
         form_pic_name = request.form.get("pic_name", "").strip()
         if form_pic_name:
             logger.info(f"Found pic_name in form: '{form_pic_name}'")
+        
+        if 'image' not in request.files:
+            logger.error("No image file provided in request")
+            return jsonify({"success": False, "message": "No image file provided"}), 400
+            
+        file = request.files['image']
         
         if file.filename == '':
             logger.error("Empty filename in request")
@@ -823,67 +830,127 @@ def face_recognize():
             file.save(temp_path)
             logger.info(f"Saved temporary file to {temp_path}")
             
-            # For simplicity, always register and verify the face
-            file_path = os.path.join(UPLOAD_FOLDER, f"user_{user_id}.jpg")
-            
-            # Save a copy as the registered face
-            import shutil
-            shutil.copy2(temp_path, file_path)
-            
-            # Get current time for verification timestamp
-            verification_time = datetime.utcnow()
-            
-            # Check for pic_name in request form
-            form_pic_name = request.form.get("pic_name", "").strip()
-            if form_pic_name:
-                logger.info(f"Found pic_name in form: '{form_pic_name}'")
-                # Update user with pic_name from form
-                users.update_one(
-                    {"_id": ObjectId(user_id)},
-                    {"$set": {
-                        "image_path": file_path,
-                        "face_verified_at": verification_time,
-                        "image_name": form_pic_name
-                    }}
-                )
-                # Also set in session
-                session["pic_name"] = form_pic_name
-            else:
-                # Update user record without changing pic_name
-                users.update_one(
-                    {"_id": ObjectId(user_id)},
-                    {"$set": {
-                        "image_path": file_path,
-                        "face_verified_at": verification_time
-                    }}
-                )
-            
-            # Reload user to get fresh data
+            # Check if user already has a registered face
             user = users.find_one({"_id": ObjectId(user_id)})
+            has_registered_face = bool(user.get("image_path") and os.path.exists(user.get("image_path")))
             
-            log_activity(str(user_id), "face_registered_and_verified")
-            logger.info(f"Face registered and verified for user {user.get('username', 'User')}")
-            
-            # Store face verification info in session for welcome message on dashboard
-            pic_name = user.get("image_name", "")
-            username = user.get("username", "User")
-            
-            logger.info(f"User data - username: '{username}', pic_name: '{pic_name}'")
-            
-            session["face_verified_at"] = verification_time.strftime("%Y-%m-%d %H:%M:%S")
-            
-            if pic_name:
-                session["pic_name"] = pic_name
-                logger.info(f"Set session pic_name to '{pic_name}'")
-            
-            # Return success response with pic_name and username
-            return jsonify({
-                "success": True,
-                "name": username,
-                "pic_name": pic_name or session.get("pic_name", ""),
-                "message": "Face verification successful! Redirecting to dashboard...",
-                "redirect": url_for('dashboard')
-            })
+            if has_registered_face:
+                # User has a registered face - VERIFY against it
+                logger.info(f"User has registered face, performing verification")
+                
+                # Get the stored face path
+                stored_face_path = user.get("image_path")
+                
+                # Verify the new image against stored face
+                verification_result = face_verify(temp_path, stored_face_path, threshold=0.05)
+                
+                if verification_result.get("match", False):
+                    # Face matches - update verification timestamp
+                    verification_time = datetime.utcnow()
+                    
+                    # Update user with verification timestamp
+                    users.update_one(
+                        {"_id": ObjectId(user_id)},
+                        {"$set": {
+                            "face_verified_at": verification_time
+                        }}
+                    )
+                    
+                    # Set session data
+                    session["face_verified_at"] = verification_time.strftime("%Y-%m-%d %H:%M:%S")
+                    if user.get("image_name"):
+                        session["pic_name"] = user.get("image_name")
+                    
+                    # Clean up temp file
+                    os.remove(temp_path)
+                    
+                    log_activity(str(user_id), "face_verification_successful")
+                    logger.info(f"Face verification successful for user {user.get('username', 'User')}")
+                    
+                    return jsonify({
+                        "success": True,
+                        "name": user.get("username", "User"),
+                        "pic_name": user.get("image_name", ""),
+                        "message": "Face verification successful! Redirecting to dashboard...",
+                        "redirect": url_for('dashboard')
+                    })
+                else:
+                    # Face doesn't match
+                    os.remove(temp_path)
+                    logger.warning(f"Face verification failed for user {user.get('username', 'User')}")
+                    
+                    return jsonify({
+                        "success": False,
+                        "message": "Face verification failed. The face doesn't match your registered face. Please try again.",
+                        "similarity": verification_result.get("display_similarity", 0)
+                    }), 400
+            else:
+                # User doesn't have a registered face - REGISTER it
+                logger.info(f"User has no registered face, performing registration")
+                
+                file_path = os.path.join(UPLOAD_FOLDER, f"user_{user_id}.jpg")
+                
+                # Save a copy as the registered face
+                import shutil
+                shutil.copy2(temp_path, file_path)
+                
+                # Get current time for verification timestamp
+                verification_time = datetime.utcnow()
+                
+                # Check for pic_name in request form
+                form_pic_name = request.form.get("pic_name", "").strip()
+                if form_pic_name:
+                    logger.info(f"Found pic_name in form: '{form_pic_name}'")
+                    # Update user with pic_name from form
+                    users.update_one(
+                        {"_id": ObjectId(user_id)},
+                        {"$set": {
+                            "image_path": file_path,
+                            "face_verified_at": verification_time,
+                            "image_name": form_pic_name
+                        }}
+                    )
+                    # Also set in session
+                    session["pic_name"] = form_pic_name
+                else:
+                    # Update user record without changing pic_name
+                    users.update_one(
+                        {"_id": ObjectId(user_id)},
+                        {"$set": {
+                            "image_path": file_path,
+                            "face_verified_at": verification_time
+                        }}
+                    )
+                
+                # Reload user to get fresh data
+                user = users.find_one({"_id": ObjectId(user_id)})
+                
+                log_activity(str(user_id), "face_registered")
+                logger.info(f"Face registered for user {user.get('username', 'User')}")
+                
+                # Store face verification info in session for welcome message on dashboard
+                pic_name = user.get("image_name", "")
+                username = user.get("username", "User")
+                
+                logger.info(f"User data - username: '{username}', pic_name: '{pic_name}'")
+                
+                session["face_verified_at"] = verification_time.strftime("%Y-%m-%d %H:%M:%S")
+                
+                if pic_name:
+                    session["pic_name"] = pic_name
+                    logger.info(f"Set session pic_name to '{pic_name}'")
+                
+                # Clean up temp file
+                os.remove(temp_path)
+                
+                # Return success response with pic_name and username
+                return jsonify({
+                    "success": True,
+                    "name": username,
+                    "pic_name": pic_name or session.get("pic_name", ""),
+                    "message": "Face registration successful! Redirecting to dashboard...",
+                    "redirect": url_for('dashboard')
+                })
                 
         except Exception as e:
             logger.error(f"Error processing face image: {str(e)}")
