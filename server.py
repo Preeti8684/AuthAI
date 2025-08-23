@@ -1400,4 +1400,7 @@ def debug_session():
 if __name__ == "__main__":
     # Use threaded=False to avoid socket errors on Windows
     app.run(debug=True, threaded=False, use_reloader=False)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
  
