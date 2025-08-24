@@ -16,3 +16,4 @@ cffi==1.17.1
 pycparser==2.22
 packaging==25.0
 six==1.17.0
+scikit-image==0.24.0
