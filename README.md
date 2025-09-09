@@ -44,10 +44,10 @@
 ![Sign Up](image1/2.png)  
 
 ### 3️⃣ Login  
-![Login](images/login.png)  
+![Login](image1/3.png)  
 
 ### 4️⃣ Face Recognition (Duplicate Face Detected)  
-![Face Recognition](images/face.png)  
+![Face Recognition](image1/6.png)  
 
 ### 5️⃣ Face Scan  
 ![Face Scan](image1/5.png)  
