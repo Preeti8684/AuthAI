@@ -38,7 +38,7 @@
 ## 🖼️ Screenshots  
 
 ### 1️⃣ First Page – Get Started  
-![First Page](https://drive.google.com/file/d/1D9QiOFODyCyB2xRtpYypdhzqBwW706CX/view?usp=drive_link)  
+![First Page](https://drive.google.com/uc?export=view&id=1D9QiOFODyCyB2xRtpYypdhzqBwW706CX)
 
 ### 2️⃣ Sign Up  
 ![Sign Up](images/signup.png)  
