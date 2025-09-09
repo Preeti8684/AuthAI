@@ -1,4 +1,4 @@
-<img width="960" height="1020" alt="image" src="https://github.com/user-attachments/assets/892d6d41-2412-4fe5-a671-c2875bf65899" /><p align="center">
+<p align="center">
   <img src="https://img.icons8.com/?size=100&id=23292&format=png&color=000000" width="120" />
 </p>
 
