@@ -49,11 +49,18 @@
 ### 4️⃣ Face Recognition (Duplicate Face Detected)  
 ![Face Recognition](images/face.png)  
 
-### 5️⃣ Dashboard  
-![Dashboard](images/dashboard.png)  
+### 5️⃣ Face Scan  
+![Face Scan](image1/5.png)  
 
 ### 6️⃣ Change/Delete Picture  
-![Change/Delete](images/image1/Screenshot 2025-04-27 221054.png)  
+![Change/Delete](image1/11.png)  
+
+### 7️⃣ Duplicate face  
+![Change/Delete](image1/7.png)  
+
+### 8️⃣ Account Not Exist (When trying to login or delete a non-existent account)  
+![Account Not Exist](image1/4.png)  
+
 
 ---
 
