@@ -1,4 +1,4 @@
-<p align="center">
+<img width="960" height="1020" alt="image" src="https://github.com/user-attachments/assets/892d6d41-2412-4fe5-a671-c2875bf65899" /><p align="center">
   <img src="https://img.icons8.com/?size=100&id=23292&format=png&color=000000" width="120" />
 </p>
 
@@ -38,7 +38,7 @@
 ## 🖼️ Screenshots  
 
 ### 1️⃣ First Page – Get Started  
-![First Page](images/firstpage.png)  
+![First Page](https://drive.google.com/file/d/1D9QiOFODyCyB2xRtpYypdhzqBwW706CX/view?usp=drive_link)  
 
 ### 2️⃣ Sign Up  
 ![Sign Up](images/signup.png)  
