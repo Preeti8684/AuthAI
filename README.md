@@ -1,75 +1,70 @@
-# 🛡️ AuthAI — Face-Based Authentication System
+<p align="center">
+  <img src="https://img.icons8.com/?size=100&id=23292&format=png&color=000000" width="120" />
+</p>
 
-**Secure login with Face Recognition**  
-> A project demonstrating Login, Logout, Sign Up, Dashboard, Face Scan, Face Recognition, Duplicate checks (same name or same face), Replace Photo, and Delete Photo features.
+<h1 align="center">🔐 AuthAI</h1>
 
----
-
-## ✨ Features
-
-- 🔑 **Login & Logout**  
-- 📝 **Sign Up with Post-Signup Face Scan**  
-- 👤 **Duplicate Checks**  
-  - If the **face** already exists under another name → error shown.  
-  - If the **username** already exists → error shown.  
-- 🧑‍💻 **Dashboard** with quick navigation.  
-- 📷 **Face Scan** for new users.  
-- 🔄 **Replace/Delete Photo** any time.  
-- 🖼️ Stored images remain in the `images/` folder until manually deleted.  
-- ⚡ **Security-first** design suitable for banking-grade apps.  
+<p align="center">
+  <b>Secure Authentication System with Face Recognition</b><br/>
+  <i>Banking-level security made simple & smart 🚀</i>
+</p>
 
 ---
 
-## 🎬 Screenshots & Flow
+## 🏷️ Badges  
 
-> 📌 Replace `docs/media/...` with your actual screenshot paths.  
-> Best practice → keep screenshots inside your repo under `docs/media/`.
-
-### 1) Landing Page (Get Started)
-![Landing](docs/media/landing.png)
-
----
-
-### 2) Sign Up + Face Scan
-| Sign Up | Face Scan | Duplicate Face Error | Duplicate Name Error |
-|---------|-----------|-----------------------|----------------------|
-| ![SignUp](docs/media/signup.png) | ![Scan](docs/media/face-scan.png) | ![DupFace](docs/media/dup-face.png) | ![DupName](docs/media/dup-name.png) |
+<p align="center">
+  <img src="https://img.shields.io/badge/Made%20with-Python-blue?logo=python" />
+  <img src="https://img.shields.io/badge/Backend-Flask-green?logo=flask" />
+  <img src="https://img.shields.io/badge/Database-MongoDB-brightgreen?logo=mongodb" />
+  <img src="https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-orange?logo=javascript" />
+  <img src="https://img.shields.io/badge/Security-High-red?logo=shield" />
+</p>
 
 ---
 
-### 3) Login + Face Recognize
-| Login | Face Recognize |
-|-------|----------------|
-| ![Login](docs/media/login.png) | ![Recognize](docs/media/face-recognize.png) |
+## ✨ Features  
+
+- 🚀 **First Page** → Get Started option  
+- 📝 **Sign Up** → Register with username, password, and face scan  
+- 🔑 **Login** → Secure login with password + face recognition  
+- 👀 **Face Recognition** → Detects duplicate faces, prevents multiple signups  
+- 📊 **Dashboard** → Personalized view after successful login  
+- 🚪 **Logout** → Securely log out of the system  
+- 🔄 **Change/Delete Picture** → Update or remove your face scan  
 
 ---
 
-### 4) Dashboard
-![Dashboard](docs/media/dashboard.png)
+## 🖼️ Screenshots  
+
+### 1️⃣ First Page – Get Started  
+![First Page](images/firstpage.png)  
+
+### 2️⃣ Sign Up  
+![Sign Up](images/signup.png)  
+
+### 3️⃣ Login  
+![Login](images/login.png)  
+
+### 4️⃣ Face Recognition (Duplicate Face Detected)  
+![Face Recognition](images/face.png)  
+
+### 5️⃣ Dashboard  
+![Dashboard](images/dashboard.png)  
+
+### 6️⃣ Change/Delete Picture  
+![Change/Delete](images/change.png)  
 
 ---
 
-### 5) Replace & Delete Photo
-| Replace | Delete |
-|---------|--------|
-| ![Replace](docs/media/replace.png) | ![Delete](docs/media/delete.png) |
+## ⚙️ Tech Stack  
+
+🔹 **Frontend** → HTML, CSS, JavaScript  
+🔹 **Backend** → Flask (Python)  
+🔹 **Database** → MongoDB  
+🔹 **Face Recognition** → Deep Learning / OpenCV  
 
 ---
 
-### 6) Logout
-![Logout](docs/media/logout.png)
-
----
-
-## 🧱 Tech Stack
-
-- **Frontend**: HTML, CSS, JavaScript  
-- **Backend**: Flask (Python)  
-- **Database**: MongoDB  
-- **Face Recognition**: OpenCV / Deep Learning  
-- **Storage**: Images saved in `images/` folder  
-
----
-
-## 📂 Project Structure
+## 📂 Project Structure  
 
