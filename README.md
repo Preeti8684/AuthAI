@@ -68,3 +68,15 @@
 
 ## 📂 Project Structure  
 
+- [images/](images) → Screenshots (add your images here)  
+- [index.html](index.html) → Homepage  
+- [signup.html](signup.html) → Sign Up page  
+- [login.html](login.html) → Login page  
+- [face_scan.html](face_scan.html) → Face Scan page  
+- [face_recognize.html](face_recognize.html) → Face Recognition page  
+- [server.py](server.py) → Flask Backend  
+- [script.js](script.js) → Camera handling  
+- [style.css](style.css) → Animations & Styling  
+- [README.md](README.md) → Documentation  
+ 
+
