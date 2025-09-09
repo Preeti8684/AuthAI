@@ -53,7 +53,7 @@
 ![Dashboard](images/dashboard.png)  
 
 ### 6️⃣ Change/Delete Picture  
-![Change/Delete](images/change.png)  
+![Change/Delete](images/image1/Screenshot 2025-04-27 221054.png)  
 
 ---
 
