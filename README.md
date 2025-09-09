@@ -71,10 +71,8 @@
 🔹 **Database** → MongoDB  
 🔹 **Face Recognition** → Deep Learning / OpenCV  
 🔹**face_recognition - library**
-
 🔹**Libraries:**
     Flask → Web framework to run your server
-    Flask-Cors → Handle cross-origin requests (optional)
     pymongo → Connect Flask with MongoDB
 
 ---
