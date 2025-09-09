@@ -1,129 +1,75 @@
-# AuthAI - Face Authentication System
+# 🛡️ AuthAI — Face-Based Authentication System
 
-AuthAI is a secure face authentication system built with Python, Flask, and modern web technologies.
+**Secure login with Face Recognition**  
+> A project demonstrating Login, Logout, Sign Up, Dashboard, Face Scan, Face Recognition, Duplicate checks (same name or same face), Replace Photo, and Delete Photo features.
 
-## Features
+---
 
-- User registration and authentication
-- Face scanning and recognition
-- Permission management
-- Profile management
-- Activity logging
-- Security features
+## ✨ Features
 
-## Setup Instructions
+- 🔑 **Login & Logout**  
+- 📝 **Sign Up with Post-Signup Face Scan**  
+- 👤 **Duplicate Checks**  
+  - If the **face** already exists under another name → error shown.  
+  - If the **username** already exists → error shown.  
+- 🧑‍💻 **Dashboard** with quick navigation.  
+- 📷 **Face Scan** for new users.  
+- 🔄 **Replace/Delete Photo** any time.  
+- 🖼️ Stored images remain in the `images/` folder until manually deleted.  
+- ⚡ **Security-first** design suitable for banking-grade apps.  
 
-### Prerequisites
+---
 
-- Python 3.8+
-- MongoDB
-- A Gmail account (for sending emails)
+## 🎬 Screenshots & Flow
 
-### Installation
+> 📌 Replace `docs/media/...` with your actual screenshot paths.  
+> Best practice → keep screenshots inside your repo under `docs/media/`.
 
-1. Clone this repository
-2. Create a virtual environment: `python -m venv venv`
-3. Activate the virtual environment: 
-   - Windows: `venv\Scripts\activate`
-   - Linux/Mac: `source venv/bin/activate`
-4. Install dependencies: `pip install -r requirements.txt`
-5. Start MongoDB service
-6. Run the application: `python server.py`
+### 1) Landing Page (Get Started)
+![Landing](docs/media/landing.png)
 
-### Setting up Email Functionality
+---
 
-The application uses Gmail to send permission emails. To enable this feature:
+### 2) Sign Up + Face Scan
+| Sign Up | Face Scan | Duplicate Face Error | Duplicate Name Error |
+|---------|-----------|-----------------------|----------------------|
+| ![SignUp](docs/media/signup.png) | ![Scan](docs/media/face-scan.png) | ![DupFace](docs/media/dup-face.png) | ![DupName](docs/media/dup-name.png) |
 
-1. **Create a Gmail App Password**:
-   - Go to your [Google Account](https://myaccount.google.com/)
-   - Select "Security" from the left menu
-   - Under "Signing in to Google", select "2-Step Verification" (enable it if not already enabled)
-   - Scroll down to "App passwords" and select it
-   - Select "Mail" as the app and "Other" as the device
-   - Enter "AuthAI" as the name and click "Generate"
-   - Copy the 16-character password that appears
+---
 
-2. **Set Environment Variables**:
-   - Set the `EMAIL_USERNAME` environment variable to your Gmail address
-   - Set the `EMAIL_PASSWORD` environment variable to the App Password you generated
+### 3) Login + Face Recognize
+| Login | Face Recognize |
+|-------|----------------|
+| ![Login](docs/media/login.png) | ![Recognize](docs/media/face-recognize.png) |
 
-   Windows:
-   ```
-   set EMAIL_USERNAME=your.email@gmail.com
-   set EMAIL_PASSWORD=your-app-password
-   ```
+---
 
-   Linux/Mac:
-   ```
-   export EMAIL_USERNAME=your.email@gmail.com
-   export EMAIL_PASSWORD=your-app-password
-   ```
+### 4) Dashboard
+![Dashboard](docs/media/dashboard.png)
 
-3. **Test Email Functionality**:
-   - Run `python test_email.py` to test that emails are being sent correctly
+---
 
-## Usage Flow
+### 5) Replace & Delete Photo
+| Replace | Delete |
+|---------|--------|
+| ![Replace](docs/media/replace.png) | ![Delete](docs/media/delete.png) |
 
-1. **Home Page**: View information about AuthAI
-2. **Sign Up**: Create a new account with name, email and password
-3. **Login**: Authenticate with email and password
-4. **Face Scan**: Register your face for authentication
-5. **Face Recognition**: Verify your identity using face recognition
-6. **Dashboard**: View your profile and recent activities
-7. **Settings**: Update your profile settings
-8. **Logout**: Securely log out of the system
+---
 
-## Technologies
+### 6) Logout
+![Logout](docs/media/logout.png)
 
-- **Backend**: Python, Flask
-- **Database**: MongoDB
-- **Frontend**: HTML, CSS, JavaScript, TailwindCSS
-- **Face Recognition**: OpenCV
-- **Security**: Bcrypt for password hashing, CSRF protection
+---
 
-## License
+## 🧱 Tech Stack
 
-This project is licensed under the MIT License.
+- **Frontend**: HTML, CSS, JavaScript  
+- **Backend**: Flask (Python)  
+- **Database**: MongoDB  
+- **Face Recognition**: OpenCV / Deep Learning  
+- **Storage**: Images saved in `images/` folder  
 
-## Project Structure
+---
 
-```
-authai/
-├── static/
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── templates/
-│   ├── home.html
-│   ├── login.html
-│   ├── signup.html
-│   ├── dashboard.html
-│   └── face_scan.html
-├── face_match.py
-├── server.py
-└── requirements.txt
-```
+## 📂 Project Structure
 
-## Security Features
-
-- Face recognition using deep learning
-- Anti-spoofing detection
-- Secure password hashing
-- Session management
-- Activity logging
-- MongoDB for secure data storage
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Acknowledgments
-
-- VGGFace model for face recognition
-- OpenCV for image processing
-- Flask for the web framework
-- MongoDB for data storage 
