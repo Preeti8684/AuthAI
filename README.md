@@ -38,10 +38,10 @@
 ## 🖼️ Screenshots  
 
 ### 1️⃣ First Page – Get Started  
-![First Page](https://drive.google.com/uc?export=view&id=1D9QiOFODyCyB2xRtpYypdhzqBwW706CX)
+![First Page](image1/1.png)
 
 ### 2️⃣ Sign Up  
-![Sign Up](images/signup.png)  
+![Sign Up](image1/2.png)  
 
 ### 3️⃣ Login  
 ![Login](images/login.png)  
@@ -53,7 +53,7 @@
 ![Dashboard](images/dashboard.png)  
 
 ### 6️⃣ Change/Delete Picture  
-![Change/Delete](images/change.png)  
+![Change/Delete](images/image1/Screenshot 2025-04-27 221054.png)  
 
 ---
 
